@@ -39,13 +39,17 @@ def predict(modelName, dataFile):
     x, _ = loadData(dataFile)
     xNames = loadDataNoDrop(dataFile)
     model = pickle.load(open(modelName, 'rb'))
-    print(x)
     winners = model.predict(x)
     for i in range(len(winners)):
+        winner = "Null"
         if winners[i] == "Blue":
-            print(xNames.iloc[i][1])  # 3 is the index of the B_fighter column
+            # 3 is the index of the B_fighter column
+            winner = xNames.iloc[i][1]
         else:
-            print(xNames.iloc[i][0])  # 0 is the index of the R_fighter column
+            # 0 is the index of the R_fighter column
+            winner = xNames.iloc[i][0]
+        print("\n", xNames.iloc[i][1], "Vs",
+              xNames.iloc[i][0], "Winner:", winner)
 
 
 def showModel(modelName):

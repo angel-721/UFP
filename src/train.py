@@ -15,7 +15,7 @@ from sklearn.svm import SVC
 
 data = "../data/ufc-master-train.csv"
 test = "../data/ufc-master-test.csv"
-test2 = "../data/main-events.csv"
+test2 = "../data/example.csv"
 label = "Winner"
 features = ["R_odds", "B_odds", "R_wins",
             "B_wins", "lose_streak_dif", "win_streak_dif",
@@ -61,34 +61,36 @@ xNoDrop = loadDataNoDrop(data)
 def makePipeline(cvFits):
     selector = SelectPercentile(mutual_info_classif, percentile=80)
     c1 = SVC(kernel="rbf")
-    c2 = GradientBoostingClassifier(n_estimators=100)
-    c3 = KNeighborsClassifier(3)
-    estimatorsList = [("SVC", c1), ("GBC", c2), ("KNN", c3)]
-    clf = VotingClassifier(estimators=estimatorsList)
+    # c2 = GradientBoostingClassifier(n_estimators=100)
+    # c3 = KNeighborsClassifier(3)
+    # estimatorsList = [("SVC", c1), ("GBC", c2), ("KNN", c3)]
+    # clf = VotingClassifier(estimators=estimatorsList)
     pipeline = Pipeline([
         ("Encode", OneHotEncoder(handle_unknown="ignore")),
         ("Impute", SimpleImputer()),
         ("FeatureSelection", selector),
-        ("Classifier", clf)
+        ("Classifier", c1)  # Change to clf if you want to use VotingClassifier
     ])
     param_grid = {
         'FeatureSelection__percentile': [30, 40, 50, 70, 90, 100],
-        'Classifier__GBC__n_estimators': [50, 100, 200],
-        'Classifier__GBC__learning_rate': [0.01, 0.1, 0.5],
-        'Classifier__SVC__C': [0.0025, 0.1, 1, 10],
-        'Classifier__SVC__gamma': [0.1, 1, 'scale', 'auto'],
-        'Classifier__KNN__n_neighbors': [3, 5, 7],
-        'Classifier__KNN__weights': ['uniform', 'distance']
+        # 'Classifier__GBC__n_estimators': [50, 100, 200],
+        # 'Classifier__GBC__learning_rate': [0.01, 0.1, 0.5],
+        # 'Classifier__SVC__C': [0.0025, 0.1, 1, 10],
+        # 'Classifier__SVC__gamma': [0.1, 1, 'scale', 'auto'],
+        'Classifier__C': [0.0025, 0.1, 1, 10],
+        'Classifier__gamma': [0.1, 1, 'scale', 'auto'],
+        # 'Classifier__KNN__n_neighbors': [3, 5, 7],
+        # 'Classifier__KNN__weights': ['uniform', 'distance']
     }
 
     gridSearchPipeline = GridSearchCV(
         pipeline, param_grid=param_grid, cv=cvFits)
 
-    return gridSearchPipeline, numFits, cvFits
+    return gridSearchPipeline, cvFits
 
 
-def trainAndSave(pipeline, xTrain, yTrain, modelName, fits, cvFits):
-    print("Fitting model over", fits, "fits. Over", cvFits, "folds")
+def trainAndSave(pipeline, xTrain, yTrain, modelName, cvFits):
+    print("Fitting model over", cvFits, "folds")
     pipeline.fit(xTrain, yTrain)
     print(pipeline.best_score_)
     print(pipeline.best_params_)
@@ -169,8 +171,8 @@ def showModel(modelName):
 def main(args):
 
     if args.action == "train":
-        pipeline, fits, folds = makePipeline(15)
-        trainAndSave(pipeline, xTrain, yTrain, args.model_name, fits, folds)
+        pipeline, folds = makePipeline(15)
+        trainAndSave(pipeline, xTrain, yTrain, args.model_name, folds)
     if args.action == "score":
         score(args.model_name, xTrain, yTrain, xTest,
               yTest, xTest2, yTest2, args.show_test, args.show_test_2, args.show_cash_made)
