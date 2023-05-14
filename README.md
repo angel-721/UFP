@@ -2,7 +2,7 @@
 The Ultimate Fight Predictor- A fun way to predict the outcome of UFC fights.
 
 ### Warning(For now)
-The current models were trained on scikit-learn 1.20 so predicting on later versions might not work due to pickle.
+The current models were trained on scikit-learn 1.20 so predicting on later versions might not work if you are on a different version of scikit-learn
 - model1.pkl is trained on the latest version of scikit-learn!
 
 ### Use 
