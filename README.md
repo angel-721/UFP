@@ -1,6 +1,10 @@
 # UFP
 The Ultimate Fight Predictor- A fun way to predict the outcome of UFC fights.
 
+<p align="center">
+  <img src="https://github.com/angel-721/UFP/assets/75283919/9a668142-38ec-4af5-842f-177e09962033">
+</p>
+
 ### Warning(For now)
 The current models were trained on scikit-learn 1.20 so predicting on later versions might not work if you are on a different version of scikit-learn
 - model1.pkl is trained on the latest version of scikit-learn!
